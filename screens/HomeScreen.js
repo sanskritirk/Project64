@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View,TextInput,TouchableOpacity} from 'react-native';
 import {Header} from 'react-native-elements';
+import dictionary from '../localDb';
 
 export default class App extends React.Component{
  constructor(){
@@ -15,23 +16,25 @@ export default class App extends React.Component{
      defination:" "
    }
  }
- getWord=(word)=>{
-     var url="https://whitehat-dictionary.glitch.me/?word="+word
-     return fetch(url)
-     .then((data)=>{
-         return data.json()
+ getWord=(text)=>{
+     var text=text.toLowerCase()
+     try{
+     var word=dictionary[text]["word"]
+     var lexicalCategory=dictionary[text]["lexicalCategory"]
+     var defination=dictionary[text]["definition"]
+     this.setState({
+       "word":word,
+       "lexicalCategory":lexicalCategory,
+       "defination":defination
      })
-     .then((response)=>{
-         var responseObject=JSON.parse(response);
-         var word=responseObject.word
-         var lexicalCategory=responseObject.results[0].lexicalEntries[0].lexicalCategory.text
-         var defination=responseObject.results[0].lexicalEntries[0].entries[0].senses[0].defination[0]
-         this.setState({
-             "word":word.trim(),
-             "lexicalCategory":lexicalCategory===undefines?"":lexicalCategory.trim(),
-             "defination":defination===undefines?"":defination.trim(),
-                     })
-     })
+    }
+    catch(err){
+      alert("Sorry this word is not available for now")
+      this.setState({
+        'text':' ',
+        'isSearchPresses':false
+      })
+    }
  }
  
  render(){
